@@ -14,16 +14,16 @@ def get_packages():
     return packages
 
 setup(
-    name = 'mongotor',
-    version = version,
-    description = "(MongoDB + Tornado) is an asynchronous driver and toolkit for working with MongoDB inside a Tornado app",
-    long_description = open("README.md").read(),
-    keywords = ['mongo','tornado'],
-    author = 'Marcel Nicolay',
-    author_email = 'marcel.nicolay@gmail.com',
-    url = 'http://marcelnicolay.github.com/mongotor/',
-    license = 'OSI',
-    classifiers = ['Development Status :: 4 - Beta',
+    name='mongotor',
+    version=version,
+    description="(MongoDB + Tornado) is an asynchronous driver and toolkit for working with MongoDB inside a Tornado app",
+    long_description=open("README.md").read(),
+    keywords=['mongo', 'tornado'],
+    author='Marcel Nicolay',
+    author_email='marcel.nicolay@gmail.com',
+    url='http://marcelnicolay.github.com/mongotor/',
+    license='OSI',
+    classifiers=['Development Status :: 4 - Beta',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved',
                    'Natural Language :: English',
@@ -32,7 +32,8 @@ setup(
                    'Programming Language :: Python :: 2.7',
                    'Topic :: Software Development :: Libraries :: Application Frameworks',
                    ],
-    install_requires = open("requirements.txt").read().split("\n"),
-    packages = get_packages(),
-    test_suite="nose.collector"
+    install_requires=open("requirements.txt").read().split("\n"),
+    packages=get_packages(),
+    test_suite="nose.collector",
+    use_2to3=True
 )
