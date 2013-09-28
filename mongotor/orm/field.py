@@ -67,7 +67,7 @@ class StringField(Field):
 
     def _validate(self, value):
         value = super(StringField, self)._validate(value)
-        if self.regex is not None and self.regex.match(value) is None:
+        if value is not None and self.regex is not None and self.regex.match(value) is None:
             raise(TypeError("Value did not match regex"))
 
         return value
