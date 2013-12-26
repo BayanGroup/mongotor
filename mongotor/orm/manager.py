@@ -26,8 +26,8 @@ class Manager(object):
     def __init__(self, collection):
         self.collection = collection
 
-    @gen.engine
-    def find_one(self, query, callback):
+    @gen.coroutine
+    def find_one(self, query):
         client = Client(Database(), self.collection.__collection__)
         result, error = yield gen.Task(client.find_one, query)
 
@@ -35,10 +35,10 @@ class Manager(object):
         if result:
             instance = self.collection.create(result, cleaned=True)
 
-        callback(instance)
+        raise gen.Return(instance)
 
-    @gen.engine
-    def find(self, query, callback, **kw):
+    @gen.coroutine
+    def find(self, query, **kw):
         client = Client(Database(), self.collection.__collection__)
         result, error = yield gen.Task(client.find, query, **kw)
 
@@ -48,7 +48,7 @@ class Manager(object):
             for item in result:
                 items.append(self.collection.create(item, cleaned=True))
 
-        callback(items)
+        raise gen.Return(items)
 
     def count(self, query=None, callback=None):
         client = Client(Database(), self.collection.__collection__)
