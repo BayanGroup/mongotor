@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 import logging
 from tornado import gen
 from mongotor.client import Client
@@ -32,6 +33,9 @@ __lazy_classes__ = {}
 class CollectionMetaClass(type):
 
     def __new__(cls, name, bases, attrs):
+        if not attrs.get('__collection__'):
+            attrs['__collection__'] = re.sub(
+                '([A-Z]+)', r'_\1', name).lower()[1:]
         global __lazy_classes__
 
         # Add the document's fields to the _data
@@ -133,8 +137,11 @@ class Collection(object):
 
         return instance
 
-    @gen.engine
-    def save(self, safe=True, check_keys=True, callback=None):
+    def get_client(self):
+        return Client(Database(), self.__collection__)
+
+    @gen.coroutine
+    def save(self, safe=True, check_keys=True):
         """Save a document
 
         >>> user = Users()
@@ -150,7 +157,7 @@ class Collection(object):
         """
         pre_save.send(instance=self)
 
-        client = Client(Database(), self.__collection__)
+        client = self.get_client()
         response, error = yield gen.Task(client.insert, self.as_dict(),
             safe=safe, check_keys=check_keys)
 
@@ -158,11 +165,10 @@ class Collection(object):
 
         post_save.send(instance=self)
 
-        if callback:
-            callback((response, error))
+        raise gen.Return((response, error))
 
-    @gen.engine
-    def remove(self, safe=True, callback=None):
+    @gen.coroutine
+    def remove(self, safe=True):
         """Remove a document
 
         :Parameters:
@@ -171,17 +177,15 @@ class Collection(object):
         """
         pre_remove.send(instance=self)
 
-        client = Client(Database(), self.__collection__)
+        client = self.get_client()
         response, error = yield gen.Task(client.remove, self._id, safe=safe)
 
         post_remove.send(instance=self)
 
-        if callback:
-            callback((response, error))
+        raise gen.Return((response, error))
 
-    @gen.engine
-    def update(self, document=None, upsert=False, safe=True, multi=False,
-        callback=None, force=False):
+    @gen.coroutine
+    def update(self, document=None, upsert=False, safe=True, multi=False, force=False):
         """Update a document
 
         :Parameters:
@@ -190,8 +194,7 @@ class Collection(object):
         - `force`: if True will overide full document
         """
         if not document and not self.dirty_fields:
-            callback(tuple())
-            return
+            raise gen.Return(tuple())
 
         pre_update.send(instance=self)
 
@@ -201,7 +204,7 @@ class Collection(object):
             else:
                 document = {"$set": self.as_dict(self.dirty_fields)}
 
-        client = Client(Database(), self.__collection__)
+        client = self.get_client()
         spec = {'_id': self._id}
 
         response, error = yield gen.Task(client.update, spec, document,
@@ -211,5 +214,4 @@ class Collection(object):
 
         post_update.send(instance=self)
 
-        if callback:
-            callback((response, error))
+        raise gen.Return((response, error))
