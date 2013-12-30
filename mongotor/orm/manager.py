@@ -55,9 +55,11 @@ class Manager(object):
         result = yield self.find({})
         raise gen.Return(result)
 
-    def count(self, query=None, callback=None):
+    @gen.coroutine
+    def count(self, query=None):
         client = Client(Database(), self.collection.__collection__)
-        client.find(query).count(callback=callback)
+        count = yield client.find(query).count()
+        raise gen.Return(count)
 
     @gen.engine
     def distinct(self, key, callback, query=None):

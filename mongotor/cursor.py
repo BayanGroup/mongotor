@@ -95,8 +95,8 @@ class Cursor(object):
         else:
             callback((response['data'], None))
 
-    @gen.engine
-    def count(self, callback):
+    @gen.coroutine
+    def count(self):
         """Get the size of the results set for this query.
 
         Returns the number of documents in the results set for this query. Does
@@ -110,7 +110,7 @@ class Cursor(object):
         if response and len(response) > 0 and 'n' in response:
             total = int(response['n'])
 
-        callback(total)
+        raise gen.Return(total)
 
     @gen.engine
     def distinct(self, key, callback):
