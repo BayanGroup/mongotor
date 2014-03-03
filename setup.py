@@ -14,7 +14,7 @@ def get_packages():
     return packages
 
 setup(
-    name='mongotor-skd',
+    name='mongotor',
     version=version,
     description="(MongoDB + Tornado) is an asynchronous driver and toolkit for working with MongoDB inside a Tornado app",
     long_description=open("README.md").read(),

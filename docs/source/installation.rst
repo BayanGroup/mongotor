@@ -12,7 +12,7 @@ MongoTor supports installation using standard Python "distutils" or
 Install via easy_install or pip
 -------------------------------
 
-When ``easy_install`` or ``pip`` is available, the distribution can be 
+When ``easy_install`` or ``pip`` is available, the distribution can be
 downloaded from Pypi and installed in one step::
 
     easy_install mongotor
@@ -39,11 +39,13 @@ Python prompt like this:
 
 .. sourcecode:: python
 
-     >>> import mongotor 
+     >>> import mongotor
      >>> mongotor.version # doctest: +SKIP
 
 Requirements
 ------------
+
+Python version 2.6+ is required. But only version 2.7 is tested for now.
 
 The following three python libraries are required.
 

@@ -20,7 +20,7 @@ The next steps are provide support to:
 * authentication
 * nearest preference in replica sets
 * gridfs
-* all python versions (2.5, 2.6, 2.7, 3.2 and PyPy), only python 2.7 is tested now
+* all python versions (2.6, 2.7, 3.2 and PyPy), only python 2.7 is tested now
 
 ## Documentation
 
@@ -67,7 +67,7 @@ class Handler(tornado.web.RequestHandler):
     def get(self):
         user = {'_id': ObjectId(), 'name': 'User Name'}
         yield gen.Task(self.db.user.insert, user)
-        
+
         yield gen.Task(self.db.user.update, user['_id'], {"$set": {'name': 'New User Name'}})
 
         user_found = yield gen.Task(self.db.user.find_one, user['_id'])
@@ -98,10 +98,10 @@ class Handler(tornado.web.RequestHandler):
     @gen.engine
     def get(self):
         user = {'_id': ObjectId()}
-        
+
         # write on primary
         yield gen.Task(self.db.user.insert, user)
-        
+
         # wait for replication
         time.sleep(2)
 
