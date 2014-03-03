@@ -69,6 +69,10 @@ class Collection(object):
     >>> class Users(collection.Collection):
     >>>     __collection__ = 'users'
     >>>     name = field.StringField()
+
+    If you do not specify `__collection__` attribute, it is
+    auto-generated from class name. Camel case is converted
+    to snake case. For example: CamelCase -> camel_case.
     """
     __metaclass__ = CollectionMetaClass
 
