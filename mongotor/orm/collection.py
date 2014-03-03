@@ -35,7 +35,7 @@ class CollectionMetaClass(type):
     def __new__(cls, name, bases, attrs):
         if not attrs.get('__collection__'):
             attrs['__collection__'] = re.sub(
-                '([A-Z]+)', r'_\1', name).lower()[1:]
+                r'\B([A-Z]+)', r'_\1', name).lower()
         global __lazy_classes__
 
         # Add the document's fields to the _data
