@@ -52,6 +52,10 @@ class Manager(object):
 
     @gen.coroutine
     def all(self):
+        """Find all documents
+
+        This method is alias for `find({})`
+        """
         result = yield self.find({})
         raise gen.Return(result)
 
