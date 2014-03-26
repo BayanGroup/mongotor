@@ -177,8 +177,8 @@ class CollectionTestCase(testing.AsyncTestCase):
             __collection__ = 'collection_test'
 
         Database.disconnect()
-        CollectionTest().save.when.called_with(callback=None) \
-            .throw(DatabaseError, 'you must be initialize database before perform this action')
+        CollectionTest().save(callback=None)
+        self.assertRaises(DatabaseError, self.wait)
 
         Database.init(["localhost:27027", "localhost:27028"], dbname='test')
 
