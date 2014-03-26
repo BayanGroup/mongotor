@@ -29,7 +29,7 @@ import warnings
 def initialized(fn):
     @wraps(fn)
     def wrapped(self, *args, **kwargs):
-        if not hasattr(self, '_initialized'):
+        if not hasattr(self, '_initialized') or not self._initialized:
             raise DatabaseError("you must be initialize database before perform this action")
 
         return fn(self, *args, **kwargs)
@@ -45,6 +45,7 @@ class Database(object):
     def __new__(cls):
         if not cls._instance:
             cls._instance = super(Database, cls).__new__(cls)
+            cls._initialized = False
 
         return cls._instance
 
@@ -147,7 +148,8 @@ class Database(object):
         >>> Database.disconnect()
 
         """
-        if not cls._instance or not hasattr(cls._instance, '_initialized'):
+        if (not cls._instance or not hasattr(cls._instance, '_initialized')
+                or not cls._instance._initialized):
             raise ValueError("Database isn't initialized")
 
         for node in cls._instance._nodes:
