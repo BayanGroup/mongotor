@@ -112,8 +112,8 @@ class Cursor(object):
 
         raise gen.Return(total)
 
-    @gen.engine
-    def distinct(self, key, callback):
+    @gen.coroutine
+    def distinct(self, key):
         """Get a list of distinct values for `key` among all documents
         in the result set of this query.
 
@@ -131,7 +131,7 @@ class Cursor(object):
         response, error = yield gen.Task(self._database.command,
             'distinct', self._collection, **command)
 
-        callback(response['values'])
+        raise gen.Return(response['values'])
 
     def _query_options(self):
         """Get the query options string to use for this query."""

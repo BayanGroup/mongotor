@@ -65,10 +65,11 @@ class Manager(object):
         count = yield client.find(query).count()
         raise gen.Return(count)
 
-    @gen.engine
-    def distinct(self, key, callback, query=None):
+    @gen.coroutine
+    def distinct(self, key, query=None):
         client = Client(Database(), self.collection.__collection__)
-        client.find(query).distinct(key, callback=callback)
+        result = yield client.find(query).distinct(key)
+        raise gen.Return(result)
 
     @gen.engine
     def geo_near(self, near, max_distance=None, num=None, spherical=None,
