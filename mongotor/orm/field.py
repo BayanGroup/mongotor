@@ -116,6 +116,14 @@ class NumberField(Field):
 
     def _validate(self, value):
         value = super(NumberField, self)._validate(value)
+        if value is None:
+            if self.min_value is not None:
+                value = self.min_value
+            elif self.max_value is not None:
+                value = self.max_value
+            else:
+                value = self.field_type()
+
         if self.min_value is not None and value < self.min_value:
             raise(TypeError("Value can not be less than %s" % (self.min_value)))
 
