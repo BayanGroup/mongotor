@@ -120,7 +120,7 @@ class NumberField(Field):
             raise(TypeError("Value can not be less than %s" % (self.min_value)))
 
         if self.max_value is not None and value > self.max_value:
-            raise(TypeError("Value can not be more than %s" & (self.max_value)))
+            raise(TypeError("Value can not be more than %s" % (self.max_value)))
 
         return value
 
