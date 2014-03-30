@@ -51,6 +51,12 @@ class Manager(object):
         raise gen.Return(items)
 
     @gen.coroutine
+    def remove(self, *args, **kwargs):
+        client = Client(Database(), self.collection.__collection__)
+        result, error = yield gen.Task(client.remove, *args, **kwargs)
+        raise gen.Return(result)
+
+    @gen.coroutine
     def all(self):
         """Find all documents
 

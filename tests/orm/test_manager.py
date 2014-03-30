@@ -88,6 +88,84 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
 
         collections_found.should.have.length_of(0)
 
+    def test_remove_all(self):
+        """[ManagerTestCase] - Remove all documents from collection"""
+        collection_test = CollectionTest()
+        collection_test._id = ObjectId()
+        collection_test.string_attr = "string value"
+        collection_test.save(callback=self.stop)
+        self.wait()
+
+        other_collection_test = CollectionTest()
+        other_collection_test._id = ObjectId()
+        other_collection_test.string_attr = "other string value"
+        other_collection_test.save(callback=self.stop)
+        self.wait()
+
+        CollectionTest.objects.all(callback=self.stop)
+        collections_found = self.wait()
+        collections_found.should.have.length_of(2)
+
+        CollectionTest.objects.remove(callback=self.stop)
+        result = self.wait()
+
+        CollectionTest.objects.all(callback=self.stop)
+        collections_found = self.wait()
+        collections_found.should.have.length_of(0)
+
+    def test_remove_one_by_id(self):
+        """[ManagerTestCase] - Remove one document from collection by id"""
+        collection_test = CollectionTest()
+        collection_test._id = ObjectId()
+        collection_test.string_attr = "string value"
+        collection_test.save(callback=self.stop)
+        self.wait()
+
+        other_collection_test = CollectionTest()
+        other_collection_test._id = ObjectId()
+        other_collection_test.string_attr = "other string value"
+        other_collection_test.save(callback=self.stop)
+        self.wait()
+
+        CollectionTest.objects.all(callback=self.stop)
+        collections_found = self.wait()
+        collections_found.should.have.length_of(2)
+
+        CollectionTest.objects.remove(collection_test._id, callback=self.stop)
+        result = self.wait()
+
+        CollectionTest.objects.all(callback=self.stop)
+        collections_found = self.wait()
+        collections_found.should.have.length_of(1)
+        collections_found[0]._id.should.be.equal(other_collection_test._id)
+
+    def test_remove_one_by_spec(self):
+        """[ManagerTestCase] - Remove one document from collection by spec"""
+        collection_test = CollectionTest()
+        collection_test._id = ObjectId()
+        collection_test.string_attr = "string value"
+        collection_test.save(callback=self.stop)
+        self.wait()
+
+        other_collection_test = CollectionTest()
+        other_collection_test._id = ObjectId()
+        other_collection_test.string_attr = "other string value"
+        other_collection_test.save(callback=self.stop)
+        self.wait()
+
+        CollectionTest.objects.all(callback=self.stop)
+        collections_found = self.wait()
+        collections_found.should.have.length_of(2)
+
+        CollectionTest.objects.remove({"string_attr": "other string value"},
+            callback=self.stop)
+        result = self.wait()
+
+        CollectionTest.objects.all(callback=self.stop)
+        collections_found = self.wait()
+        collections_found.should.have.length_of(1)
+        collections_found[0]._id.should.be.equal(collection_test._id)
+
     def test_count(self):
         """[ManagerTestCase] - Count document in collection"""
         collection_test = CollectionTest()
