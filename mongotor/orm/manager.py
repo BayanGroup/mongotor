@@ -77,9 +77,9 @@ class Manager(object):
         result = yield client.find(query).distinct(key)
         raise gen.Return(result)
 
-    @gen.engine
+    @gen.coroutine
     def geo_near(self, near, max_distance=None, num=None, spherical=None,
-        unique_docs=None, query=None, callback=None, **kw):
+        unique_docs=None, query=None, **kw):
 
         command = SON({"geoNear": self.collection.__collection__})
 
@@ -108,10 +108,10 @@ class Manager(object):
             for item in result['results']:
                 items.append(self.collection.create(item['obj'], cleaned=True))
 
-        callback(items)
+        raise gen.Return(items)
 
-    @gen.engine
-    def map_reduce(self, map_, reduce_, callback, query=None, out=None):
+    @gen.coroutine
+    def map_reduce(self, map_, reduce_, query=None, out=None):
         command = SON({'mapreduce': self.collection.__collection__})
 
         command.update({
@@ -126,15 +126,11 @@ class Manager(object):
 
         result, error = yield gen.Task(Database().command, command)
         if not result or int(result['ok']) != 1:
-            callback(None)
-            return
+            raise gen.Return(None)
 
-        callback(result['results'])
+        raise gen.Return(result['results'])
 
-    @gen.engine
-    def truncate(self, callback=None):
-        client = Client(Database(), self.collection.__collection__)
-        yield gen.Task(client.remove, {})
-
-        if callback:
-            callback()
+    @gen.coroutine
+    def truncate(self):
+        result = yield self.remove()
+        raise gen.Return(result)
