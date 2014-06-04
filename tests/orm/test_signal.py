@@ -1,5 +1,5 @@
 from copy import deepcopy
-from tornado import testing
+from tornado import testing, gen
 from tornado.ioloop import IOLoop
 from mongotor.orm import signal
 from mongotor.database import Database
@@ -62,16 +62,17 @@ class SignalTestCase(testing.AsyncTestCase, unittest.TestCase):
             string_attr = StringField()
 
         @signal.receiver(signal.post_save, CollectionTest)
+        @gen.coroutine
         def collection_post_save_handler(sender, instance):
-            CollectionTest.objects.find_one(collection_test._id, callback=self.stop)
-            collection_found = self.wait()
+            collection_found = yield CollectionTest.objects.find_one(collection_test._id)
             self.assertEquals(instance.string_attr, collection_found.string_attr)
             SignalTestCase.signal_triggered = True
+            self.stop()
 
         collection_test = CollectionTest()
         collection_test._id = ObjectId()
         collection_test.string_attr = "should be string value"
-        collection_test.save(callback=self.stop)
+        collection_test.save()
 
         self.wait()
         self.assertTrue(SignalTestCase.signal_triggered)
@@ -115,13 +116,14 @@ class SignalTestCase(testing.AsyncTestCase, unittest.TestCase):
         self.wait()
 
         @signal.receiver(signal.post_remove, CollectionTest)
+        @gen.coroutine
         def collection_post_remove_handler(sender, instance):
-            CollectionTest.objects.find_one(collection_test._id, callback=self.stop)
-            collection_found = self.wait()
+            collection_found = yield CollectionTest.objects.find_one(collection_test._id)
             self.assertIsNone(collection_found)
             SignalTestCase.signal_triggered = True
+            self.stop()
 
-        collection_test.remove(callback=self.stop)
+        collection_test.remove()
 
         self.wait()
         self.assertTrue(SignalTestCase.signal_triggered)
