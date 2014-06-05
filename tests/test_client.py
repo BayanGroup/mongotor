@@ -113,8 +113,8 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.find({'someflag': 1}, callback=self.stop)
         response, error = self.wait()
 
-        response[0]['_id'].should.be(documents[0]['_id'])
-        response[1]['_id'].should.be(documents[1]['_id'])
+        response[0]['_id'].should.be.equal(documents[0]['_id'])
+        response[1]['_id'].should.be.equal(documents[1]['_id'])
         error.should.be.none
 
     def test_find_one_document(self):
@@ -133,7 +133,7 @@ class ClientTestCase(testing.AsyncTestCase):
             callback=self.stop)
         response, error = self.wait()
 
-        response['_id'].should.be(documents[1]['_id'])
+        response['_id'].should.be.equal(documents[1]['_id'])
         error.should.be.none
 
     def test_find_one_document_by_id(self):
@@ -152,7 +152,7 @@ class ClientTestCase(testing.AsyncTestCase):
             callback=self.stop)
         response, error = self.wait()
 
-        response['_id'].should.be(documents[2]['_id'])
+        response['_id'].should.be.equal(documents[2]['_id'])
         error.should.be.none
 
     def test_count_documents_in_find(self):

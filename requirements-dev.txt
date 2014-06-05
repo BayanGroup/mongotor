@@ -1,7 +1,8 @@
 -r requirements.txt
 
-coverage==3.5.2
-nose==1.1.2
-fudge==1.0.3
-sure==1.0.6
-spec==0.9.7
+coverage>=3.5.2
+nose>=1.1.2
+fudge>=1.0.3
+sure>=1.0.6
+spec>=0.9.7
+mock

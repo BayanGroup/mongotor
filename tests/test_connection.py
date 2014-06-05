@@ -49,9 +49,9 @@ class ConnectionTestCase(testing.AsyncTestCase):
         response = helpers._unpack_response(response)
         result = response['data'][0]
 
-        result['oid'].should.be(object_id)
-        result['ok'].should.be(1.0)
-        result['str'].should.be(str(object_id))
+        result['oid'].should.be.equal(object_id)
+        result['ok'].should.be.equal(1.0)
+        result['str'].should.be.equal(str(object_id))
 
     def test_close_connection_to_mongo(self):
         """[ConnectionTestCase] - Can close connection to mongo"""
@@ -112,6 +112,7 @@ class ConnectionTestCase(testing.AsyncTestCase):
         """[ConnectionTestCase] - Raises IOError when stream throw error"""
         fake_stream = fudge.Fake()
         fake_stream.expects('write').raises(IOError())
+        fake_stream.has_attr(close=fudge.Fake().is_callable())
 
         with fudge.patched_context(self.conn, '_stream', fake_stream):
 

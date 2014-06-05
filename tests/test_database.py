@@ -54,9 +54,9 @@ class DatabaseTestCase(testing.AsyncTestCase):
 
         result = response['data'][0]
 
-        result['oid'].should.be(object_id)
-        result['ok'].should.be(1.0)
-        result['str'].should.be(str(object_id))
+        result['oid'].should.be.equal(object_id)
+        result['ok'].should.be.equal(1.0)
+        result['str'].should.be.equal(str(object_id))
 
     def test_disconnect_database(self):
         """[DatabaseTestCase] - Disconnect the database"""

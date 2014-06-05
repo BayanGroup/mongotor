@@ -29,11 +29,11 @@ class ReplicaSetTestCase(testing.AsyncTestCase):
         master_node = ReadPreference.select_primary_node(Database()._nodes)
         secondary_node = ReadPreference.select_node(Database()._nodes, mode=ReadPreference.SECONDARY)
 
-        master_node.host.should.be('localhost')
-        master_node.port.should.be(27027)
+        master_node.host.should.be.equal('localhost')
+        master_node.port.should.be.equal(27027)
 
-        secondary_node.host.should.be('localhost')
-        secondary_node.port.should.be(27028)
+        secondary_node.host.should.be.equal('localhost')
+        secondary_node.port.should.be.equal(27028)
 
         nodes = Database()._nodes
         nodes.should.have.length_of(2)
