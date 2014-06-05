@@ -6,8 +6,6 @@ from mongotor.errors import DatabaseError
 from mongotor import message
 from mongotor import helpers
 from bson.objectid import ObjectId
-import sure
-import fudge
 
 
 class DatabaseTestCase(testing.AsyncTestCase):
@@ -23,13 +21,13 @@ class DatabaseTestCase(testing.AsyncTestCase):
         """[DatabaseTestCase] - Create a singleton database connection using connect method"""
         database = Database.connect("localhost:27027", dbname='test')
 
-        database.should.be.equal(Database())
+        self.assertEquals(database, Database())
 
     def test_create_singleton_database_connection(self):
         """[DatabaseTestCase] - Create a singleton database connection"""
         database = Database.init("localhost:27027", dbname='test')
 
-        database.should.be.equal(Database())
+        self.assertEquals(database, Database())
 
     def test_not_raise_when_database_was_initiated(self):
         """[DatabaseTestCase] - Not raises ValueError when connect to inititated database"""
@@ -37,7 +35,7 @@ class DatabaseTestCase(testing.AsyncTestCase):
         database1 = Database.init("localhost:27027", dbname='test')
         database2 = Database.init("localhost:27027", dbname='test')
 
-        database1.should.be.equal(database2)
+        self.assertEquals(database1, database2)
 
     def test_send_test_message(self):
         """[DatabaseTestCase] - Send a test message to database"""
@@ -54,20 +52,20 @@ class DatabaseTestCase(testing.AsyncTestCase):
 
         result = response['data'][0]
 
-        result['oid'].should.be.equal(object_id)
-        result['ok'].should.be.equal(1.0)
-        result['str'].should.be.equal(str(object_id))
+        self.assertEquals(result['oid'], object_id)
+        self.assertEquals(result['ok'], 1.0)
+        self.assertEquals(result['str'], str(object_id))
 
     def test_disconnect_database(self):
         """[DatabaseTestCase] - Disconnect the database"""
         Database.init(["localhost:27027"], dbname='test')
         Database.disconnect()
 
-        Database._instance.should.be.none
+        self.assertIsNone(Database._instance)
 
     def test_raises_error_when_disconnect_a_not_connected_database(self):
         """[DatabaseTestCase] - Raises ValueError when disconnect from a not connected database"""
-        Database.disconnect.when.called_with().throw(ValueError, "Database isn't initialized")
+        self.assertRaisesRegexp(ValueError, "Database isn't initialized", Database.disconnect)
 
     def test_raises_error_when_could_not_find_node(self):
         """[DatabaseTestCase] - Raises DatabaseError when could not find valid nodes"""
@@ -78,7 +76,8 @@ class DatabaseTestCase(testing.AsyncTestCase):
             database.send_message('', callback=self.stop)
             self.wait()
 
-        send_message.when.called.throw(DatabaseError, 'could not find an available node')
+        self.assertRaisesRegexp(DatabaseError, 'could not find an available node',
+                                send_message)
 
     def test_run_command(self):
         """[DatabaseTestCase] - Run a database command"""
@@ -87,4 +86,4 @@ class DatabaseTestCase(testing.AsyncTestCase):
         database.command('ismaster', callback=self.stop)
 
         response, error = self.wait()
-        response['ok'].should.be.ok
+        self.assertTrue(response['ok'])

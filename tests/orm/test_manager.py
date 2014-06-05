@@ -48,8 +48,8 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
             callback=self.stop)
         collections_found = self.wait()
 
-        collections_found._id.should.be.within([collection_test._id,
-            other_collection_test._id])
+        self.assertIn(collections_found._id, [collection_test._id,
+                                              other_collection_test._id])
 
     def test_find_one_not_found(self):
         """[ManagerTestCase] - Find one when not found"""
@@ -57,7 +57,7 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
             callback=self.stop)
         collections_found = self.wait()
 
-        collections_found.should.be.none
+        self.assertIsNone(collections_found)
 
     def test_find(self):
         """[ManagerTestCase] - Find documents"""
@@ -77,8 +77,8 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
             callback=self.stop)
         collections_found = self.wait()
 
-        collections_found.should.have.length_of(1)
-        collections_found[0]._id.should.be.equal(collection_test._id)
+        self.assertEquals(len(collections_found), 1)
+        self.assertEquals(collections_found[0]._id, collection_test._id)
 
     def test_find_not_found(self):
         """[ManagerTestCase] - Find documents when not found"""
@@ -86,7 +86,7 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
             callback=self.stop)
         collections_found = self.wait()
 
-        collections_found.should.have.length_of(0)
+        self.assertEquals(len(collections_found), 0)
 
     def test_remove_all(self):
         """[ManagerTestCase] - Remove all documents from collection"""
@@ -104,14 +104,14 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
 
         CollectionTest.objects.all(callback=self.stop)
         collections_found = self.wait()
-        collections_found.should.have.length_of(2)
+        self.assertEquals(len(collections_found), 2)
 
         CollectionTest.objects.remove(callback=self.stop)
         result = self.wait()
 
         CollectionTest.objects.all(callback=self.stop)
         collections_found = self.wait()
-        collections_found.should.have.length_of(0)
+        self.assertEquals(len(collections_found), 0)
 
     def test_remove_one_by_id(self):
         """[ManagerTestCase] - Remove one document from collection by id"""
@@ -129,15 +129,15 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
 
         CollectionTest.objects.all(callback=self.stop)
         collections_found = self.wait()
-        collections_found.should.have.length_of(2)
+        self.assertEquals(len(collections_found), 2)
 
         CollectionTest.objects.remove(collection_test._id, callback=self.stop)
         result = self.wait()
 
         CollectionTest.objects.all(callback=self.stop)
         collections_found = self.wait()
-        collections_found.should.have.length_of(1)
-        collections_found[0]._id.should.be.equal(other_collection_test._id)
+        self.assertEquals(len(collections_found), 1)
+        self.assertEquals(collections_found[0]._id, other_collection_test._id)
 
     def test_remove_one_by_spec(self):
         """[ManagerTestCase] - Remove one document from collection by spec"""
@@ -155,7 +155,7 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
 
         CollectionTest.objects.all(callback=self.stop)
         collections_found = self.wait()
-        collections_found.should.have.length_of(2)
+        self.assertEquals(len(collections_found), 2)
 
         CollectionTest.objects.remove({"string_attr": "other string value"},
             callback=self.stop)
@@ -163,8 +163,8 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
 
         CollectionTest.objects.all(callback=self.stop)
         collections_found = self.wait()
-        collections_found.should.have.length_of(1)
-        collections_found[0]._id.should.be.equal(collection_test._id)
+        self.assertEquals(len(collections_found), 1)
+        self.assertEquals(collections_found[0]._id, collection_test._id)
 
     def test_count(self):
         """[ManagerTestCase] - Count document in collection"""
@@ -177,14 +177,14 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
         CollectionTest.objects.count(callback=self.stop)
         count = self.wait()
 
-        count.should.be.equal(1)
+        self.assertEquals(count, 1)
 
     def test_count_not_found(self):
         """[ManagerTestCase] - Count document when not found"""
         CollectionTest.objects.count(callback=self.stop)
         count = self.wait()
 
-        count.should.be.equal(0)
+        self.assertEquals(count, 0)
 
     def test_find_distinct_values_with_distinct_command(self):
         """[ManagerTestCase] - Find distinct values with distinct command"""

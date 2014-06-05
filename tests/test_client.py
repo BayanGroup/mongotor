@@ -5,7 +5,6 @@ from tornado import testing
 from mongotor.database import Database
 from bson import ObjectId
 from datetime import datetime
-import sure
 
 
 class ClientTestCase(testing.AsyncTestCase):
@@ -29,8 +28,8 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.insert(document, callback=self.stop)
         response, error = self.wait()
 
-        response['ok'].should.be.equal(1.0)
-        error.should.be.none
+        self.assertEquals(response['ok'], 1.0)
+        self.assertIsNone(error)
 
     def test_insert_a_document_list(self):
         """[ClientTestCase] - insert a list of document with client"""
@@ -44,8 +43,8 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.insert(documents, callback=self.stop)
         response, error = self.wait()
 
-        response['ok'].should.be.equal(1.0)
-        error.should.be.none
+        self.assertEquals(response['ok'], 1.0)
+        self.assertIsNone(error)
 
     def test_remove_document_by_id(self):
         """[ClientTestCase] - remove a document by id"""
@@ -61,8 +60,8 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.remove(documents[0]['_id'], callback=self.stop)
         response, error = self.wait()
 
-        response['ok'].should.be.equal(1.0)
-        error.should.be.none
+        self.assertEquals(response['ok'], 1.0)
+        self.assertIsNone(error)
 
     def test_remove_document_by_spec(self):
         """[ClientTestCase] - remove a document by spec"""
@@ -78,8 +77,8 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.remove({'name': 'shouldbename'}, callback=self.stop)
         response, error = self.wait()
 
-        response['ok'].should.be.equal(1.0)
-        error.should.be.none
+        self.assertEquals(response['ok'], 1.0)
+        self.assertIsNone(error)
 
     def test_update_document(self):
         """[ClientTestCase] - update a document"""
@@ -96,8 +95,8 @@ class ClientTestCase(testing.AsyncTestCase):
             'should be a new name'}}, callback=self.stop)
         response, error = self.wait()
 
-        response['ok'].should.be.equal(1.0)
-        error.should.be.none
+        self.assertEquals(response['ok'], 1.0)
+        self.assertIsNone(error)
 
     def test_find_document(self):
         """[ClientTestCase] - find a document"""
@@ -114,9 +113,9 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.find({'someflag': 1}, callback=self.stop)
         response, error = self.wait()
 
-        response[0]['_id'].should.be.equal(documents[0]['_id'])
-        response[1]['_id'].should.be.equal(documents[1]['_id'])
-        error.should.be.none
+        self.assertEquals(response[0]['_id'], documents[0]['_id'])
+        self.assertEquals(response[1]['_id'], documents[1]['_id'])
+        self.assertIsNone(error)
 
     def test_find_one_document(self):
         """[ClientTestCase] - find one document"""
@@ -134,8 +133,8 @@ class ClientTestCase(testing.AsyncTestCase):
             callback=self.stop)
         response, error = self.wait()
 
-        response['_id'].should.be.equal(documents[1]['_id'])
-        error.should.be.none
+        self.assertEquals(response['_id'], documents[1]['_id'])
+        self.assertIsNone(error)
 
     def test_find_one_document_by_id(self):
         """[ClientTestCase] - find one document by id"""
@@ -153,8 +152,8 @@ class ClientTestCase(testing.AsyncTestCase):
             callback=self.stop)
         response, error = self.wait()
 
-        response['_id'].should.be.equal(documents[2]['_id'])
-        error.should.be.none
+        self.assertEquals(response['_id'], documents[2]['_id'])
+        self.assertIsNone(error)
 
     def test_count_documents_in_find(self):
         """[ClientTestCase] - counting documents in query"""
@@ -171,7 +170,7 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.find({"param": 'shouldbeparam1'}).count(callback=self.stop)
         total = self.wait()
 
-        total.should.be.equal(2)
+        self.assertEquals(total, 2)
 
     def test_count_all_documents(self):
         """[ClientTestCase] - counting among all documents"""
@@ -188,7 +187,7 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.count(callback=self.stop)
         total = self.wait()
 
-        total.should.be.equal(3)
+        self.assertEquals(total, 3)
 
     def test_distinct_documents_in_find(self):
         """[ClientTestCase] - distinct documents in query"""
@@ -205,8 +204,8 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.find({"param": 'shouldbeparam1'}).distinct('uuid', callback=self.stop)
         distincts = self.wait()
 
-        distincts.should.have.length_of(1)
-        distincts[0].should.be.equal(100)
+        self.assertEquals(len(distincts), 1)
+        self.assertEquals(distincts[0], 100)
 
     def test_distinct_all_documents(self):
         """[ClientTestCase] - distinct among all documents"""
@@ -223,9 +222,9 @@ class ClientTestCase(testing.AsyncTestCase):
         db.collection_test.distinct('uuid', callback=self.stop)
         distincts = self.wait()
 
-        distincts.should.have.length_of(2)
-        distincts[0].should.be.equal(100)
-        distincts[1].should.be.equal(200)
+        self.assertEquals(len(distincts), 2)
+        self.assertEquals(distincts[0], 100)
+        self.assertEquals(distincts[1], 200)
 
     def test_aggregate_collection(self):
         """[ClientTestCase] - aggregate command"""
@@ -267,11 +266,11 @@ class ClientTestCase(testing.AsyncTestCase):
 
             response = self.wait()
 
-            response['result'][0]['_id'].should.be.equal({'tags': 'fun'})
-            response['result'][0]['authors'].should.be.equal(['bob'])
+            self.assertEquals(response['result'][0]['_id'], {'tags': 'fun'})
+            self.assertEquals(response['result'][0]['authors'], ['bob'])
 
-            response['result'][1]['_id'].should.be.equal({'tags': 'good'})
-            response['result'][1]['authors'].should.be.equal(['joe', 'bob'])
+            self.assertEquals(response['result'][1]['_id'], {'tags': 'good'})
+            self.assertEquals(response['result'][1]['authors'], ['joe', 'bob'])
         finally:
             db.articles.remove({}, callback=self.stop)
             self.wait()
@@ -312,7 +311,7 @@ class ClientTestCase(testing.AsyncTestCase):
         try:
             db.articles.group(callback=self.stop, **group)
             result = self.wait()
-            result['retval'][0]['csum'].should.be.equal(16)
+            self.assertEquals(result['retval'][0]['csum'], 16)
         finally:
             db.articles.remove({}, callback=self.stop)
             self.wait()
@@ -340,9 +339,9 @@ class ClientTestCase(testing.AsyncTestCase):
         keys = list(six.iterkeys(result))
         keys.sort()
 
-        keys.should.be.equal(['_id', 'comment'])
+        self.assertEquals(keys, ['_id', 'comment'])
 
-        str(result['_id']).should.be.equal(str(documents[0]['_id']))
-        result['comment'].should.have.length_of(1)
-        result['comment'][0]['author'].should.be.equal('joe')
-        _.should.be.none
+        self.assertEquals(str(result['_id']), str(documents[0]['_id']))
+        self.assertEquals(len(result['comment']), 1)
+        self.assertEquals(result['comment'][0]['author'], 'joe')
+        self.assertIsNone(_)

@@ -7,7 +7,6 @@ from mongotor import message
 from mongotor.cursor import Cursor, DESCENDING, ASCENDING
 from mongotor.database import Database
 from mongotor.node import ReadPreference
-import sure
 
 
 class CursorTestCase(testing.AsyncTestCase):
@@ -59,9 +58,9 @@ class CursorTestCase(testing.AsyncTestCase):
 
         result, error = self.wait()
 
-        result['_id'].should.be.equal(document['_id'])
-        result['name'].should.be.equal(document['name'])
-        error.should.be.none
+        self.assertEquals(result['_id'], document['_id'])
+        self.assertEquals(result['name'], document['name'])
+        self.assertIsNone(error)
 
     def test_find_documents_with_limit(self):
         """[CursorTestCase] - Find documents with limit"""
@@ -80,10 +79,10 @@ class CursorTestCase(testing.AsyncTestCase):
 
         result, error = self.wait()
 
-        result.should.have.length_of(2)
-        str(result[0]['_id']).should.be.equal(str(document1['_id']))
-        str(result[1]['_id']).should.be.equal(str(document2['_id']))
-        error.should.be.none
+        self.assertEquals(len(result), 2)
+        self.assertEquals(str(result[0]['_id']), str(document1['_id']))
+        self.assertEquals(str(result[1]['_id']), str(document2['_id']))
+        self.assertIsNone(error)
 
     def test_find_documents_with_spec(self):
         """[CursorTestCase] - Find documents with spec"""
@@ -102,10 +101,10 @@ class CursorTestCase(testing.AsyncTestCase):
 
         result, error = self.wait()
 
-        result.should.have.length_of(2)
-        str(result[0]['_id']).should.be.equal(str(document1['_id']))
-        str(result[1]['_id']).should.be.equal(str(document3['_id']))
-        error.should.be.none
+        self.assertEquals(len(result), 2)
+        self.assertEquals(str(result[0]['_id']), str(document1['_id']))
+        self.assertEquals(str(result[1]['_id']), str(document3['_id']))
+        self.assertIsNone(error)
 
     def test_find_documents_ordering_descending_by_field(self):
         """[CursorTestCase] - Find documents order descending by field"""
@@ -125,10 +124,10 @@ class CursorTestCase(testing.AsyncTestCase):
 
         result, error = self.wait()
 
-        result.should.have.length_of(2)
-        str(result[0]['_id']).should.be.equal(str(document3['_id']))
-        str(result[1]['_id']).should.be.equal(str(document2['_id']))
-        error.should.be.none
+        self.assertEquals(len(result), 2)
+        self.assertEquals(str(result[0]['_id']), str(document3['_id']))
+        self.assertEquals(str(result[1]['_id']), str(document2['_id']))
+        self.assertIsNone(error)
 
     def test_find_documents_ordering_ascending_by_field(self):
         """[CursorTestCase] - Find documents order ascending by field"""
@@ -148,10 +147,10 @@ class CursorTestCase(testing.AsyncTestCase):
 
         result, error = self.wait()
 
-        result.should.have.length_of(2)
-        str(result[0]['_id']).should.be.equal(str(document1['_id']))
-        str(result[1]['_id']).should.be.equal(str(document2['_id']))
-        error.should.be.none
+        self.assertEquals(len(result), 2)
+        self.assertEquals(str(result[0]['_id']), str(document1['_id']))
+        self.assertEquals(str(result[1]['_id']), str(document2['_id']))
+        self.assertIsNone(error)
 
     def test_find_document_by_id(self):
         """[CursorTestCase] - Find document by id"""
@@ -170,8 +169,8 @@ class CursorTestCase(testing.AsyncTestCase):
 
         result, error = self.wait()
 
-        str(result['_id']).should.be.equal(str(document2['_id']))
-        error.should.be.none
+        self.assertEquals(str(result['_id']), str(document2['_id']))
+        self.assertIsNone(error)
 
     def test_find_returning_fields(self):
         """[CursorTestCase] - Find and return only selectd fields"""
@@ -197,9 +196,9 @@ class CursorTestCase(testing.AsyncTestCase):
         keys = list(six.iterkeys(result))
         keys.sort()
 
-        keys.should.be.equal(['_id', 'comment'])
+        self.assertEquals(keys, ['_id', 'comment'])
 
-        str(result['_id']).should.be.equal(str(document1['_id']))
-        result['comment'].should.have.length_of(1)
-        result['comment'][0]['author'].should.be.equal('joe')
-        _.should.be.none
+        self.assertEquals(str(result['_id']), str(document1['_id']))
+        self.assertEquals(len(result['comment']), 1)
+        self.assertEquals(result['comment'][0]['author'], 'joe')
+        self.assertIsNone(_)

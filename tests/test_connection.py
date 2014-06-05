@@ -8,7 +8,6 @@ from bson import ObjectId
 from mongotor import message
 from mongotor import helpers
 
-import sure
 import fudge
 
 
@@ -28,13 +27,13 @@ class ConnectionTestCase(testing.AsyncTestCase):
     def test_not_connect_to_mongo_raises_error(self):
         """[ConnectionTestCase] - Raises error when can't connect to mongo"""
 
-        Connection.when.called_with(host="localhost", port=27000) \
-            .should.throw(InterfaceError, "Connection refused")
+        self.assertRaisesRegexp(InterfaceError, "Connection refused", Connection,
+                                host="localhost", port=27000)
 
     def test_connect_to_mongo(self):
         """[ConnectionTestCase] - Can stabilish connection to mongo"""
 
-        self.conn._connected.should.be.ok
+        self.assertTrue(self.conn._connected)
 
     def test_send_test_message_to_mongo(self):
         """[ConnectionTestCase] - Send message to test driver connection"""
@@ -49,17 +48,17 @@ class ConnectionTestCase(testing.AsyncTestCase):
         response = helpers._unpack_response(response)
         result = response['data'][0]
 
-        result['oid'].should.be.equal(object_id)
-        result['ok'].should.be.equal(1.0)
-        result['str'].should.be.equal(str(object_id))
+        self.assertEquals(result['oid'], object_id)
+        self.assertEquals(result['ok'], 1.0)
+        self.assertEquals(result['str'], str(object_id))
 
     def test_close_connection_to_mongo(self):
         """[ConnectionTestCase] - Can close connection to mongo"""
 
         self.conn.close()
 
-        self.conn._connected.should_not.be.ok
-        self.conn._stream.closed().should.be.ok
+        self.assertFalse(self.conn._connected)
+        self.assertTrue(self.conn._stream.closed())
 
     def test_return_integrity_error_when_mongo_return_err(self):
         """[ConnectionTestCase] - Returns IntegrityError when mongo return a message with err"""
@@ -72,7 +71,7 @@ class ConnectionTestCase(testing.AsyncTestCase):
         self.wait()
 
         self.conn.send_message(message_insert, True, callback=self.stop)
-        self.wait.when.called_with().throw(IntegrityError)
+        self.assertRaises(IntegrityError, self.wait)
 
     @fudge.patch('mongotor.connection.helpers')
     def test_raises_error_when_cant_unpack_response(self, fake_helpers):
@@ -87,7 +86,7 @@ class ConnectionTestCase(testing.AsyncTestCase):
 
         self.conn.send_message(message_test, with_last_error=True, callback=self.stop)
 
-        self.wait.when.called_with().throw(DatabaseError, 'database error')
+        self.assertRaisesRegexp(DatabaseError, 'database error', self.wait)
 
     def test_reconnect_when_connection_was_lost(self):
         """[ConnectionTestCase] - Reconnect to mongo when connection was lost"""
@@ -105,8 +104,8 @@ class ConnectionTestCase(testing.AsyncTestCase):
 
         self.conn.close()
 
-        self.conn.send_message.when.called_with('shouldBeMessage',
-            callback=None).should.throw(InterfaceError, "connection is closed")
+        self.assertRaisesRegexp(InterfaceError, "connection is closed", self.conn.send_message,
+                                'shouldBeMessage', callback=None)
 
     def test_raises_error_when_stream_reaise_ioerror(self):
         """[ConnectionTestCase] - Raises IOError when stream throw error"""
@@ -115,6 +114,4 @@ class ConnectionTestCase(testing.AsyncTestCase):
         fake_stream.has_attr(close=fudge.Fake().is_callable())
 
         with fudge.patched_context(self.conn, '_stream', fake_stream):
-
-            self.conn.send_message.when.called_with((0, ''), callback=None) \
-                .throw(IOError)
+            self.assertRaises(IOError, self.conn.send_message, (0, ''), callback=None)

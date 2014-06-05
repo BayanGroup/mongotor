@@ -1,6 +1,5 @@
 # coding:utf-8
 import unittest
-import sure
 from mongotor.node import ReadPreference, Node
 
 
@@ -25,14 +24,14 @@ class ReadPreferenceTestCase(unittest.TestCase):
         node_found = ReadPreference.select_node([self.secondary1,
             self.secondary2, self.primary])
 
-        node_found.should.be.eql(self.primary)
+        self.assertEquals(node_found, self.primary)
 
     def test_read_preference_primary(self):
         """[ReadPreferenceTestCase] - get primary node when preference is PRIMARY"""
         node_found = ReadPreference.select_node([self.secondary1,
             self.secondary2, self.primary], ReadPreference.PRIMARY)
 
-        node_found.should.be.eql(self.primary)
+        self.assertEquals(node_found, self.primary)
 
     def test_read_preference_primary_preferred_up(self):
         """[ReadPreferenceTestCase] - get primary node when preference is PRIMARY_PREFERRED and primary is up"""
@@ -40,7 +39,7 @@ class ReadPreferenceTestCase(unittest.TestCase):
         node_found = ReadPreference.select_node([self.secondary1,
             self.secondary2, self.primary], ReadPreference.PRIMARY_PREFERRED)
 
-        node_found.should.be.eql(self.primary)
+        self.assertEquals(node_found, self.primary)
 
     def test_read_preference_primary_preferred_down(self):
         """[ReadPreferenceTestCase] - get secondary node when preference is PRIMARY_PREFERRED and primary is down"""
@@ -49,7 +48,7 @@ class ReadPreferenceTestCase(unittest.TestCase):
         node_found = ReadPreference.select_node([self.secondary1,
             self.secondary2, self.primary], ReadPreference.PRIMARY_PREFERRED)
 
-        node_found.should.be.eql(self.secondary1)
+        self.assertEquals(node_found, self.secondary1)
 
     def test_read_preference_secondary(self):
         """[ReadPreferenceTestCase] - get secondary node when preference is SECONDARY"""
@@ -57,7 +56,7 @@ class ReadPreferenceTestCase(unittest.TestCase):
         node_found = ReadPreference.select_node([self.secondary1,
             self.secondary2, self.primary], ReadPreference.SECONDARY)
 
-        node_found.should.be.eql(self.secondary1)
+        self.assertEquals(node_found, self.secondary1)
 
     def test_read_preference_secondary_preferred(self):
         """[ReadPreferenceTestCase] - get secondary node when preference is SECONDARY_PREFERRED"""
@@ -65,7 +64,7 @@ class ReadPreferenceTestCase(unittest.TestCase):
         node_found = ReadPreference.select_node([self.secondary1,
             self.secondary2, self.primary], ReadPreference.SECONDARY_PREFERRED)
 
-        node_found.should.be.eql(self.secondary1)
+        self.assertEquals(node_found, self.secondary1)
 
     def test_read_preference_secondary_preferred_down(self):
         """[ReadPreferenceTestCase] - get primary node when preference is SECONDARY_PREFERRED and secondary is down"""
@@ -74,4 +73,4 @@ class ReadPreferenceTestCase(unittest.TestCase):
         node_found = ReadPreference.select_node([self.secondary1,
             self.secondary2, self.primary], ReadPreference.SECONDARY_PREFERRED)
 
-        node_found.should.be.eql(self.primary)
+        self.assertEquals(node_found, self.primary)

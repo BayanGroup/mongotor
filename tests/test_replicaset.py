@@ -5,7 +5,6 @@ from bson import ObjectId
 from mongotor.errors import DatabaseError
 from mongotor.database import Database
 from mongotor.node import ReadPreference
-import sure
 import os
 import time
 
@@ -29,14 +28,14 @@ class ReplicaSetTestCase(testing.AsyncTestCase):
         master_node = ReadPreference.select_primary_node(Database()._nodes)
         secondary_node = ReadPreference.select_node(Database()._nodes, mode=ReadPreference.SECONDARY)
 
-        master_node.host.should.be.equal('localhost')
-        master_node.port.should.be.equal(27027)
+        self.assertEquals(master_node.host, 'localhost')
+        self.assertEquals(master_node.port, 27027)
 
-        secondary_node.host.should.be.equal('localhost')
-        secondary_node.port.should.be.equal(27028)
+        self.assertEquals(secondary_node.host, 'localhost')
+        self.assertEquals(secondary_node.port, 27028)
 
         nodes = Database()._nodes
-        nodes.should.have.length_of(2)
+        self.assertEquals(len(nodes), 2)
 
     def test_raises_error_when_mode_is_secondary_and_secondary_is_down(self):
         """[ReplicaSetTestCase] - Raise error when mode is secondary and secondary is down"""
@@ -48,12 +47,11 @@ class ReplicaSetTestCase(testing.AsyncTestCase):
             db._connect(callback=self.stop)
             self.wait()
 
-            Database().send_message.when.called_with((None, ''),
-                read_preference=ReadPreference.SECONDARY)\
-                .throw(DatabaseError)
+            self.assertRaises(DatabaseError, Database().send_message, (None, ''),
+                              read_preference=ReadPreference.SECONDARY)
         finally:
             os.system('make mongo-start-node2')
-            time.sleep(5)  # wait to become secondary again
+            time.sleep(8)  # wait to become secondary again
 
 
 class SecondaryPreferredTestCase(testing.AsyncTestCase):
@@ -80,4 +78,4 @@ class SecondaryPreferredTestCase(testing.AsyncTestCase):
         db.test.find_one(doc, callback=self.stop)
         doc_found, error = self.wait()
 
-        doc_found.should.be.eql(doc)
+        self.assertEquals(doc_found, doc)
