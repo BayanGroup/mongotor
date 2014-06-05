@@ -19,7 +19,9 @@ import uuid
 import re
 import decimal
 from datetime import datetime
+import warnings
 from bson import ObjectId
+import six
 
 
 class Field(object):
@@ -63,7 +65,7 @@ class StringField(Field):
 
     def __init__(self, regex=None, *args, **kwargs):
         self.regex = re.compile(regex) if regex else None
-        super(StringField, self).__init__(field_type=unicode, *args, **kwargs)
+        super(StringField, self).__init__(field_type=six.text_type, *args, **kwargs)
 
     def _validate(self, value):
         value = super(StringField, self)._validate(value)
@@ -139,10 +141,11 @@ class IntegerField(NumberField):
         super(IntegerField, self).__init__(int, *args, **kwargs)
 
 
-class LongField(NumberField):
-
-    def __init__(self, *args, **kwargs):
-        super(LongField, self).__init__(long, *args, **kwargs)
+if six.PY2:
+    class LongField(NumberField):
+        def __init__(self, *args, **kwargs):
+            warnings.warn('LongField is deprecated, use IntegerField instead', DeprecationWarning)
+            super(LongField, self).__init__(long, *args, **kwargs)
 
 
 class FloatField(NumberField):
@@ -200,7 +203,7 @@ class Md5Field(Field):
     length = 32
 
     def __init__(self, *args, **kwargs):
-        super(Md5Field, self).__init__(field_type=unicode, *args, **kwargs)
+        super(Md5Field, self).__init__(field_type=six.text_type, *args, **kwargs)
 
     def _validate(self, value):
         value = super(Md5Field, self)._validate(value)
@@ -220,7 +223,7 @@ class Sha1Field(Field):
     length = 40
 
     def __init__(self, *args, **kwargs):
-        super(Sha1Field, self).__init__(field_type=unicode, *args, **kwargs)
+        super(Sha1Field, self).__init__(field_type=six.text_type, *args, **kwargs)
 
     def _validate(self, value):
         value = super(Sha1Field, self)._validate(value)

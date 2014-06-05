@@ -14,6 +14,7 @@
 
 import bson
 import struct
+import six
 from mongotor.errors import (DatabaseError,
     InterfaceError, TimeoutError)
 
@@ -64,7 +65,7 @@ def _check_command_response(response, msg="%s", allowable_errors=[]):
         # Mongos returns the error details in a 'raw' object
         # for some errors.
         if "raw" in response:
-            for shard in response["raw"].itervalues():
+            for shard in six.itervalues(response["raw"]):
                 if not shard.get("ok"):
                     # Just grab the first error...
                     details = shard
@@ -92,8 +93,8 @@ def _fields_list_to_dict(fields):
     """
     as_dict = {}
     for field in fields:
-        if not isinstance(field, basestring):
+        if not isinstance(field, six.string_types):
             raise TypeError("fields must be a list of key names, "
-                            "each an instance of %s" % (basestring.__name__,))
+                            "each an instance of string (str/unicode)")
         as_dict[field] = 1
     return as_dict

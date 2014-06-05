@@ -1,4 +1,5 @@
 # coding: utf-8
+import six
 from tornado.ioloop import IOLoop
 from tornado import testing
 from mongotor.database import Database
@@ -6,8 +7,7 @@ from mongotor.orm.collection import Collection
 from mongotor.orm.manager import Manager
 from mongotor.orm.field import (ObjectIdField, StringField, DateTimeField,
     IntegerField, BooleanField, FloatField, ListField, ObjectField,
-    LongField, DecimalField, UrlField, UuidField, EmailField, Md5Field,
-    Sha1Field)
+    DecimalField, UrlField, UuidField, EmailField, Md5Field, Sha1Field)
 from mongotor.errors import DatabaseError
 from bson.objectid import ObjectId
 import sure
@@ -283,13 +283,17 @@ class CollectionTestCase(testing.AsyncTestCase):
             _id = ObjectIdField(default=ObjectId())
             base_url_field = UrlField(default="https://www.test.com")
             base_decimal_field = DecimalField(default=2.1)
-            base_md5_field = Md5Field(default=hashlib.md5("test").hexdigest())
+            base_md5_field = Md5Field(default=hashlib.md5(b"test").hexdigest())
 
         class ChildCollectionTest(CollectionTest):
             child_uuid_field = UuidField(default=uuid.uuid4())
             child_email_field = EmailField(default="test@test.com")
-            child_sha1_field = Sha1Field(default=hashlib.sha1("test").hexdigest())
+            child_sha1_field = Sha1Field(default=hashlib.sha1(b"test").hexdigest())
 
+        if six.PY3:  # only test LongField on python2
+            return
+
+        from mongotor.orm.field import LongField
         class SecondChildCollectionTest(ChildCollectionTest):
             second_child_long_field = LongField(default=1000)
 

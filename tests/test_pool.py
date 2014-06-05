@@ -1,4 +1,5 @@
 # coding: utf-8
+import six
 from tornado.ioloop import IOLoop
 from tornado import testing
 from bson import ObjectId
@@ -45,7 +46,7 @@ class ConnectionPoolTestCase(testing.AsyncTestCase):
         pool = ConnectionPool('localhost', 27027, dbname='test', maxconnections=10)
 
         connections = []
-        for i in xrange(10):
+        for i in six.moves.range(10):
             pool.connection(self.stop)
             connections.append(self.wait())
 
@@ -83,7 +84,7 @@ class ConnectionPoolTestCase(testing.AsyncTestCase):
         message_test = message.query(0, 'mongotor_test.$cmd', 0, 1,
             {'driverOIDTest': ObjectId()})
 
-        for i in xrange(300):
+        for i in six.moves.range(300):
             pool.connection(self.stop)
             connection = self.wait()
 
@@ -108,7 +109,7 @@ class ConnectionPoolTestCase(testing.AsyncTestCase):
         message_test = message.query(0, 'mongotor_test.$cmd', 0, 1,
             {'driverOIDTest': ObjectId()})
 
-        for i in xrange(300):
+        for i in range(300):
             pool.connection(self.stop)
             connection = self.wait()
 
@@ -117,7 +118,7 @@ class ConnectionPoolTestCase(testing.AsyncTestCase):
 
         pool._idle_connections.should.have.length_of(0)
 
-        for i in xrange(300):
+        for i in six.moves.range(300):
             pool.connection(self.stop)
             connection = self.wait()
 
@@ -133,7 +134,7 @@ class ConnectionPoolTestCase(testing.AsyncTestCase):
         message_test = message.query(0, 'mongotor_test.$cmd', 0, 1,
             {'driverOIDTest': ObjectId()})
 
-        for i in xrange(30000):
+        for i in six.moves.range(30000):
             pool.connection(self.stop)
             connection = self.wait()
 

@@ -1,4 +1,5 @@
 # coding: utf-8
+import six
 from tornado.ioloop import IOLoop
 from tornado import testing
 from mongotor.database import Database
@@ -336,7 +337,7 @@ class ClientTestCase(testing.AsyncTestCase):
 
         result, _ = self.wait()
 
-        keys = result.keys()
+        keys = list(six.iterkeys(result))
         keys.sort()
 
         keys.should.be.equal(['_id', 'comment'])

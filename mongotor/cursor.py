@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
+import six
 from tornado import gen
 from bson import SON
 from mongotor import message
@@ -120,9 +121,8 @@ class Cursor(object):
         :Parameters:
           - `key`: name of key for which we want to get the distinct values
         """
-        if not isinstance(key, basestring):
-            raise TypeError("key must be an instance "
-                            "of %s" % (basestring.__name__,))
+        if not isinstance(key, six.string_types):
+            raise TypeError("key must be a string (str/unicode)")
 
         command = {"key": key}
         if self._spec:

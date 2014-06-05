@@ -17,6 +17,7 @@
 
 import logging
 import random
+import six
 from tornado import gen
 from bson import SON
 from mongotor.pool import ConnectionPool
@@ -34,7 +35,7 @@ class Node(object):
         if not pool_kargs:
             pool_kargs = {}
 
-        assert isinstance(host, (str, unicode))
+        assert isinstance(host, six.string_types)
         assert isinstance(port, int)
 
         self.host = host

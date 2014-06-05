@@ -17,6 +17,7 @@
 
 import re
 import logging
+import six
 from tornado import gen
 from mongotor.client import Client
 from mongotor.orm.field import Field
@@ -39,7 +40,7 @@ class CollectionMetaClass(type):
         global __lazy_classes__
 
         # Add the document's fields to the _data
-        for attr_name, attr_value in attrs.iteritems():
+        for attr_name, attr_value in six.iteritems(attrs):
             if hasattr(attr_value, "__class__") and\
                     issubclass(attr_value.__class__, Field) and\
                     attr_value.name is None:
@@ -56,6 +57,7 @@ class CollectionMetaClass(type):
         return new_class
 
 
+@six.add_metaclass(CollectionMetaClass)
 class Collection(object):
     """Collection is the base class
 
@@ -74,7 +76,6 @@ class Collection(object):
     auto-generated from class name. Camel case is converted
     to snake case. For example: CamelCase -> camel_case.
     """
-    __metaclass__ = CollectionMetaClass
 
     def __new__(cls, class_name=None, *args, **kwargs):
         if class_name:
@@ -90,7 +91,7 @@ class Collection(object):
     def as_dict(self, fields=None):
         items = {}
         fields = fields or []
-        iteritems = self.__class__.__dict__.iteritems()
+        iteritems = six.iteritems(self.__class__.__dict__)
         if fields:
             iteritems = ((k,v) for k,v in iteritems if k in fields)
 
@@ -104,7 +105,7 @@ class Collection(object):
         # get the dirty fields when we only want to update those.
         if not fields:
             for cls in self.__class__.__mro__:
-                for attr_name, attr_type in cls.__dict__.iteritems():
+                for attr_name, attr_type in six.iteritems(cls.__dict__):
                     if isinstance(attr_type, Field):
                         attr_value = getattr(self, attr_name)
                         if attr_value is not None:
@@ -130,7 +131,7 @@ class Collection(object):
         >>> assert user.name == 'should be name'
         """
         instance = cls()
-        for (key, value) in dictionary.iteritems():
+        for (key, value) in six.iteritems(dictionary):
             try:
                 setattr(instance, str(key), value)
             except TypeError as e:

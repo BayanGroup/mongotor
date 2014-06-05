@@ -17,6 +17,7 @@
 import logging
 from datetime import timedelta
 from threading import Condition
+import six
 from tornado.ioloop import IOLoop
 from functools import partial
 from mongotor.connection import Connection
@@ -38,11 +39,11 @@ class ConnectionPool(object):
     def __init__(self, host, port, dbname, maxconnections=0, maxusage=0,
                  autoreconnect=True):
 
-        assert isinstance(host, (str, unicode))
+        assert isinstance(host, six.string_types)
         assert isinstance(port, int)
         assert isinstance(maxconnections, int)
         assert isinstance(maxusage, int)
-        assert isinstance(dbname, (str, unicode))
+        assert isinstance(dbname, six.string_types)
         assert isinstance(autoreconnect, bool)
 
         self._host = host

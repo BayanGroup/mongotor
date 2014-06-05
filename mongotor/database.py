@@ -17,6 +17,7 @@
 
 from functools import partial, wraps
 from datetime import timedelta
+import six
 from tornado import gen
 from tornado.ioloop import IOLoop
 from bson import SON
@@ -124,7 +125,7 @@ class Database(object):
         return u'%s.%s' % (self.dbname, collection)
 
     def _parse_addresses(self, addresses):
-        if isinstance(addresses, (str, unicode)):
+        if isinstance(addresses, six.string_types):
             addresses = [addresses]
 
         assert isinstance(addresses, list)
@@ -239,7 +240,7 @@ class Database(object):
             be added to the command document before it is sent
 
         """
-        if isinstance(command, basestring):
+        if isinstance(command, six.string_types):
             command = SON([(command, value)])
 
         command.update(kwargs)

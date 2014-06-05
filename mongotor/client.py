@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 from bson.code import Code
+import six
 from tornado import gen
 from mongotor.node import ReadPreference
 from mongotor.cursor import Cursor
@@ -291,7 +292,7 @@ class Client(object):
         """
 
         group = {}
-        if isinstance(key, basestring):
+        if isinstance(key, six.string_types):
             group["$keyf"] = Code(key)
         elif key is not None:
             group = {"key": helpers._fields_list_to_dict(key)}
