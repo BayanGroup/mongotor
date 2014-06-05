@@ -65,7 +65,7 @@ class Node(object):
                                              connection=connection)
             if not connection._pool:  # if connection is created on the fly
                 connection.close()
-        except InterfaceError, ie:
+        except InterfaceError as ie:
             logger.error('oops, database node {host}:{port} is unavailable: {error}'
                          .format(host=self.host, port=self.port, error=ie))
 

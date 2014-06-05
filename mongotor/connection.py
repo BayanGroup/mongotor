@@ -54,7 +54,7 @@ class Connection(object):
             self._stream.set_close_callback(self._socket_close)
 
             self._connected = True
-        except socket.error, error:
+        except socket.error as error:
             raise InterfaceError(error)
 
     def __repr__(self):
@@ -156,7 +156,7 @@ class Connection(object):
     def close_on_error(self):
         try:
             yield
-        except DatabaseError, de:
+        except DatabaseError as de:
             logger.error('database error'.format(de))
             raise
         except Exception:

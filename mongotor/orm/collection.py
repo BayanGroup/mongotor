@@ -133,7 +133,7 @@ class Collection(object):
         for (key, value) in dictionary.iteritems():
             try:
                 setattr(instance, str(key), value)
-            except TypeError, e:
+            except TypeError as e:
                 logger.warn(e)
 
         if cleaned:
