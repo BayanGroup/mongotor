@@ -298,7 +298,7 @@ class ManagerTestCase(testing.AsyncTestCase, unittest.TestCase):
         results = self.wait()
 
         self.assertEquals(4, len(results))
-        self.assertEquals({u'_id': u'Value A', u'value': 2.0}, results[0])
-        self.assertEquals({u'_id': u'Value B', u'value': 1.0}, results[1])
-        self.assertEquals({u'_id': u'Value C', u'value': 1.0}, results[2])
-        self.assertEquals({u'_id': u'Value D', u'value': 1.0}, results[3])
+        self.assertEquals({'_id': 'Value A', 'value': 2.0}, results[0])
+        self.assertEquals({'_id': 'Value B', 'value': 1.0}, results[1])
+        self.assertEquals({'_id': 'Value C', 'value': 1.0}, results[2])
+        self.assertEquals({'_id': 'Value D', 'value': 1.0}, results[3])

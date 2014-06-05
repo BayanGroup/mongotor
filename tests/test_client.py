@@ -267,11 +267,11 @@ class ClientTestCase(testing.AsyncTestCase):
 
             response = self.wait()
 
-            response['result'][0]['_id'].should.be.equal({u'tags': u'fun'})
-            response['result'][0]['authors'].should.be.equal([u'bob'])
+            response['result'][0]['_id'].should.be.equal({'tags': 'fun'})
+            response['result'][0]['authors'].should.be.equal(['bob'])
 
-            response['result'][1]['_id'].should.be.equal({u'tags': u'good'})
-            response['result'][1]['authors'].should.be.equal([u'joe', u'bob'])
+            response['result'][1]['_id'].should.be.equal({'tags': 'good'})
+            response['result'][1]['authors'].should.be.equal(['joe', 'bob'])
         finally:
             db.articles.remove({}, callback=self.stop)
             self.wait()

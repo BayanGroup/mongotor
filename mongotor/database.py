@@ -122,7 +122,7 @@ class Database(object):
 
     @initialized
     def get_collection_name(self, collection):
-        return u'%s.%s' % (self.dbname, collection)
+        return '%s.%s' % (self.dbname, collection)
 
     def _parse_addresses(self, addresses):
         if isinstance(addresses, six.string_types):
