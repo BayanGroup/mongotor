@@ -39,13 +39,14 @@ class CollectionMetaClass(type):
                 r'\B([A-Z]+)', r'_\1', name).lower()
         global __lazy_classes__
 
+        fields_name_to_attr = attrs['_fields_name_to_attr'] = {}
         # Add the document's fields to the _data
         for attr_name, attr_value in six.iteritems(attrs):
-            if hasattr(attr_value, "__class__") and\
-                    issubclass(attr_value.__class__, Field) and\
-                    attr_value.name is None:
-
-                attr_value.name = attr_name
+            if isinstance(attr_value, Field):
+                if attr_value.name is None:
+                    attr_value.name = attr_name
+                else:
+                    fields_name_to_attr[attr_value.name] = attr_name
 
         new_class = super(CollectionMetaClass, cls).__new__(cls, name,
             bases, attrs)
@@ -76,6 +77,8 @@ class Collection(object):
     auto-generated from class name. Camel case is converted
     to snake case. For example: CamelCase -> camel_case.
     """
+    _fields_name_to_attr = {}  # maps field database name to field attr name
+                               # will be filled in metaclass
 
     def __new__(cls, class_name=None, *args, **kwargs):
         if class_name:
@@ -99,7 +102,7 @@ class Collection(object):
             if isinstance(attr_type, Field):
                 attr_value = getattr(self, attr_name)
                 if attr_value is not None:
-                    items[attr_name] = attr_value
+                    items[attr_type.name] = attr_value
 
         # Gets the fields from base classes when fields are None so we only
         # get the dirty fields when we only want to update those.
@@ -109,7 +112,7 @@ class Collection(object):
                     if isinstance(attr_type, Field):
                         attr_value = getattr(self, attr_name)
                         if attr_value is not None:
-                            items[attr_name] = attr_value
+                            items[attr_type.name] = attr_value
 
         return items
 
@@ -133,7 +136,7 @@ class Collection(object):
         instance = cls()
         for (key, value) in six.iteritems(dictionary):
             try:
-                setattr(instance, str(key), value)
+                setattr(instance, cls._fields_name_to_attr.get(key, key), value)
             except TypeError as e:
                 logger.warn(e)
 
