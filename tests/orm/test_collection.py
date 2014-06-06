@@ -299,3 +299,33 @@ class CollectionTestCase(testing.AsyncTestCase):
         test_instance = SecondChildCollectionTest()
         test_dict = test_instance.as_dict()
         self.assertEqual(len(test_dict), 8)
+
+    def test_override_field_name(self):
+        class CollectionTest(Collection):
+            __collection__ = "collection_test"
+            _id = ObjectIdField()
+            new_field = StringField(name='string_attr')
+
+        self.assertEqual(CollectionTest.new_field.name, 'string_attr')
+
+        doc_test = CollectionTest()
+        doc_test._id = ObjectId()
+        doc_test.new_field = "should be string value"
+        self.assertFalse(hasattr(doc_test, 'string_attr'))
+        self.assertIn('string_attr', doc_test.as_dict())
+        self.assertNotIn('new_field', doc_test.as_dict())
+        doc_test.save(callback=self.stop)
+        self.wait()
+
+        doc_test.get_client().find_one(query=doc_test._id, callback=self.stop)
+        db_dict, error = self.wait()
+        self.assertIsNone(error)
+        self.assertIn('string_attr', db_dict)
+        self.assertNotIn('new_field', db_dict)
+
+        CollectionTest.objects.find_one(query=doc_test._id, callback=self.stop)
+        db_doc_test = self.wait()
+        self.assertFalse(hasattr(db_doc_test, 'string_attr'))
+        self.assertEquals(db_doc_test.new_field, "should be string value")
+        self.assertIn('string_attr', db_doc_test._data)
+        self.assertNotIn('new_field', db_doc_test._data)
