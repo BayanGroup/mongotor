@@ -35,5 +35,4 @@ setup(
     install_requires=open("requirements.txt").read().split("\n"),
     packages=get_packages(),
     test_suite="nose.collector",
-    use_2to3=True
 )
