@@ -259,6 +259,26 @@ class CollectionTestCase(testing.AsyncTestCase):
 
         db_doc_test.string_attr.should.be.equal("changed")
 
+    def test_field_default_value(self):
+        class CollectionTest(Collection):
+            int_field = IntegerField(default=2)
+            dict_field = ObjectField(default=lambda: dict())
+
+        doc = CollectionTest()
+        self.assertEqual(doc.int_field, 2)
+        # not-None default values should exists in as_dict output
+        self.assertIn('int_field', doc.as_dict())
+
+        doc_dict_field = doc.dict_field  # default callables should work
+        self.assertEqual(doc_dict_field, {})
+        # accessing the field twice, should return the same object
+        self.assertIs(doc_dict_field, doc.dict_field)
+        self.assertIs(doc.as_dict()['dict_field'], doc_dict_field)
+
+        # another document's field should be different object
+        doc2 = CollectionTest()
+        self.assertIsNot(doc2.dict_field, doc_dict_field)
+
     def test_empty_callback(self):
         class CollectionTest(Collection):
             __collection__ = "collection_test"
