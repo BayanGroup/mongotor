@@ -28,7 +28,7 @@ class Field(object):
 
         self.field_type = field_type
         self.name = name
-        self.default = self._validate(default)
+        self.default = default if callable(default) else self._validate(default)
 
     def __get__(self, instance, owner):
         if not instance:
@@ -36,7 +36,11 @@ class Field(object):
 
         value = instance._data.get(self.name)
         if value is None:
-            return self.default() if callable(self.default) else self.default
+            if not callable(self.default):
+                value = self.default
+            else:
+                value = self.default()
+                self.__set__(instance, value)  # save new value on instance itself
 
         return value
 
