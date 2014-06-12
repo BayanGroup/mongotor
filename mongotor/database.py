@@ -83,6 +83,7 @@ class Database(object):
         self._pool_kwargs = kwargs
         self._initialized = True
         self._connected = False
+        self._connect_callbacks = []
 
         for host, port in self._addresses:
             node = Node(host, port, self, self._pool_kwargs)
@@ -93,7 +94,10 @@ class Database(object):
         connect all mongodb nodes, configuring states and preferences
         - `callback`: (optional) method that will be called when the database is connected
         """
-        self._config_nodes(callback=partial(self._on_config_node, callback=callback))
+        assert not self._connected
+        self._connect_callbacks.append(callback)
+        if len(self._connect_callbacks) == 1:  # if another _connect is not in progress
+            self._config_nodes(callback=self._on_config_node)
 
     def _config_nodes(self, callback=None):
         for node in self._nodes:
@@ -101,14 +105,15 @@ class Database(object):
 
         IOLoop.instance().add_timeout(timedelta(seconds=30), self._config_nodes)
 
-    def _on_config_node(self, callback):
+    def _on_config_node(self):
         for node in self._nodes:
             if not node.initialized:
                 return
 
         self._connected = True
-
-        callback()
+        for callback in self._connect_callbacks:
+            IOLoop.instance().add_callback(callback)
+        self._connect_callbacks = []
 
     @property
     def dbname(self):
@@ -160,7 +165,7 @@ class Database(object):
     @gen.engine
     @initialized
     def send_message(self, message, read_preference=None,
-        with_response=True, callback=None):
+                     with_response=True, callback=None):
         node = yield gen.Task(self.get_node, read_preference)
 
         connection = yield gen.Task(node.connection)
@@ -191,7 +196,7 @@ class Database(object):
 
     @initialized
     def command(self, command, value=1, read_preference=None,
-        callback=None, check=True, allowable_errors=[], **kwargs):
+                callback=None, check=True, allowable_errors=[], **kwargs):
         """Issue a MongoDB command.
 
         Send command `command` to the database and return the
@@ -245,7 +250,7 @@ class Database(object):
         self._command(command, read_preference=read_preference, callback=callback)
 
     def _command(self, command, read_preference=None,
-        connection=None, callback=None):
+                 connection=None, callback=None):
 
         if read_preference is None:
             read_preference = self._read_preference
