@@ -44,7 +44,7 @@ def __pack_message(operation, data):
 
     Returns the resultant message string.
     """
-    request_id = random.randint(-2 ** 31 - 1, 2 ** 31)
+    request_id = random.randint(-2147483648, 2147483647)  # -2^31 to 2^31 - 1
     message = struct.pack("<i", 16 + len(data))
     message += struct.pack("<i", request_id)
     message += __ZERO  # responseTo
