@@ -17,6 +17,7 @@ import struct
 import six
 from mongotor.errors import (DatabaseError,
     InterfaceError, TimeoutError)
+from pymongo import version as PyMongoVersion
 
 
 def _unpack_response(response, cursor_id=None, as_class=dict, tz_aware=False):
@@ -50,7 +51,10 @@ def _unpack_response(response, cursor_id=None, as_class=dict, tz_aware=False):
     result["cursor_id"] = struct.unpack("<q", response[4:12])[0]
     result["starting_from"] = struct.unpack("<i", response[12:16])[0]
     result["number_returned"] = struct.unpack("<i", response[16:20])[0]
-    result["data"] = bson.decode_all(response[20:], as_class, tz_aware)
+    if int(PyMongoVersion[0]) >= 3:
+        result["data"] = bson.decode_all(bytes(response[20:]))
+    else:
+        result["data"] = bson.decode_all(response[20:], as_class, tz_aware)
     assert len(result["data"]) == result["number_returned"]
     return result
 
